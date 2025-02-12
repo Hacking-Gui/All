@@ -1,0 +1,115 @@
+-- Create the ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+-- Define sounds and buttons (6 sounds in total now)
+local sounds = {
+	{SoundId = "rbxassetid://17662155623", Name = "Erm"},
+	{SoundId = "rbxassetid://111851390281777", Name = "Phonk"},
+	{SoundId = "rbxassetid://71547246839600", Name = "Sigma Boy"},
+	{SoundId = "rbxassetid://6252283564", Name = "Discord Call"},
+	{SoundId = "rbxassetid://7288899492", Name = "💀"},
+	{SoundId = "rbxassetid://431839999", Name = "Mail"},
+	{SoundId = "rbxassetid://7494098965", Name = "Keyboard"},
+	{SoundId = "rbxassetid://2127625442", Name = "Discord Message"},
+	{SoundId = "rbxassetid://6927310432", Name = "Prowler"},
+	{SoundId = "rbxassetid://7313183204", Name = "Ara Ara"},
+	{SoundId = "rbxassetid://9112766176", Name = "FOR THE WIN!"}  -- New sound added
+}
+
+-- Create a frame to hold the buttons
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 410, 0, 70 * #sounds + 80)  -- Adjusted height to fit all the buttons
+frame.Position = UDim2.new(0.5, -200, 0.5, -300)  -- Adjusted position to center the bigger frame
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Dark background for the frame
+frame.BackgroundTransparency = 0.5
+frame.Parent = screenGui
+
+-- Add rounded corners to the frame
+local frameCorner = Instance.new("UICorner")
+frameCorner.CornerRadius = UDim.new(0, 12)
+frameCorner.Parent = frame
+
+-- Create buttons dynamically for each sound
+local soundInstances = {}  -- A table to hold sound instances so we can stop them later
+
+for i, soundData in ipairs(sounds) do
+	-- Create the button
+	local button = Instance.new("TextButton")
+	button.Size = UDim2.new(0, 360, 0, 50)  -- Button width increased to fit new frame size
+	button.Position = UDim2.new(0.5, -180, 0, (i - 1) * 60 + 10)  -- Adjusted to keep spacing consistent
+	button.Text = soundData.Name
+	button.BackgroundColor3 = Color3.fromRGB(0, 255, 0)  -- Green button color
+	button.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text color
+	button.TextSize = 20
+	button.Parent = frame
+
+	-- Add rounded corners to the button
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, 12)
+	corner.Parent = button
+
+	-- Create the Sound
+	local sound = Instance.new("Sound")
+	sound.SoundId = soundData.SoundId
+	sound.Parent = workspace
+
+	-- Store sound instance for later use (to stop all sounds)
+	table.insert(soundInstances, sound)
+
+	-- Connect the button click event to play the sound
+	button.MouseButton1Click:Connect(function()
+		sound:Stop()  -- Stop the sound if it's already playing
+		sound:Play()  -- Play the sound
+	end)
+end
+
+-- Create the "Stop All Sounds" button
+local stopAllButton = Instance.new("TextButton")
+stopAllButton.Size = UDim2.new(0, 360, 0, 50)  -- Button width increased to fit new frame size
+stopAllButton.Position = UDim2.new(0.5, -180, 0, #sounds * 60 + 20)  -- Positioned below the other buttons
+stopAllButton.Text = "Stop All Sounds"
+stopAllButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)  -- Red button color
+stopAllButton.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text color
+stopAllButton.TextSize = 20
+stopAllButton.Parent = frame
+
+-- Add rounded corners to the Stop All Sounds button
+local stopAllCorner = Instance.new("UICorner")
+stopAllCorner.CornerRadius = UDim.new(0, 12)
+stopAllCorner.Parent = stopAllButton
+
+-- Connect the Stop All Sounds button click event
+stopAllButton.MouseButton1Click:Connect(function()
+	for _, sound in ipairs(soundInstances) do
+		sound:Stop()  -- Stop all sounds
+	end
+end)
+
+-- Dragging functionality
+local isDragging = false
+local dragInput, mousePos, framePos
+
+-- Function to start dragging
+frame.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		isDragging = true
+		mousePos = input.Position
+		framePos = frame.Position
+	end
+end)
+
+-- Function to stop dragging
+frame.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		isDragging = false
+	end
+end)
+
+-- Update frame position while dragging
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+	if isDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+		local delta = input.Position - mousePos
+		frame.Position = UDim2.new(framePos.X.Scale, framePos.X.Offset + delta.X, framePos.Y.Scale, framePos.Y.Offset + delta.Y)
+	end
+end)
