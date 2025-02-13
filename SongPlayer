@@ -1,0 +1,174 @@
+local plr = game.Players.LocalPlayer
+local plrGui = plr.PlayerGui
+
+local sounds = {
+	1848354536,
+	1837768517,
+	1838457617,
+	1840684529,
+	1841647093,
+	1846458016,
+	1837879082,
+	142376088,   
+	1842507475,
+}
+
+-- Create the ScreenGui
+local mainGui = Instance.new("ScreenGui")
+mainGui.Parent = plrGui
+
+-- Create the black frame with smooth corners
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 300, 0, 250)  -- Adjusted height to fit all buttons and slider
+frame.Position = UDim2.new(0.5, -150, 0.5, -125)  -- Adjusted position
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Black background
+frame.BorderSizePixel = 0  -- No border
+frame.AnchorPoint = Vector2.new(0.5, 0.5)  -- Center the frame
+frame.Parent = mainGui
+
+-- Smooth corners (rounded corners)
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(0, 16)  -- Adjust the radius as needed
+uiCorner.Parent = frame
+
+-- Create the destroy button
+local destroyButton = Instance.new("TextButton")
+local destroyCorner = Instance.new("UICorner")
+destroyButton.Size = UDim2.new(0, 100, 0, 30)
+destroyButton.Position = UDim2.new(0.35, 0, 0, -35)  -- Position at the top-left corner of the frame
+destroyButton.Text = "Exit"
+destroyButton.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text
+destroyButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Black background
+destroyButton.Parent = frame
+destroyCorner.Parent = destroyButton
+
+-- Destroy the frame when the button is clicked
+destroyButton.MouseButton1Click:Connect(function()
+	frame:Destroy()
+end)
+
+-- Drag functionality with smooth animation
+local TweenService = game:GetService("TweenService")
+
+local isDragging = false
+local dragInput, dragStart, startPos
+
+-- Function to start dragging
+frame.InputBegan:Connect(function(input, gameProcessed)
+	if gameProcessed then return end
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		isDragging = true
+		dragStart = input.Position
+		startPos = frame.Position
+	end
+end)
+
+-- Function to stop dragging
+frame.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		isDragging = false
+	end
+end)
+
+-- Update the frame position while dragging smoothly
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+	if isDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+		local delta = input.Position - dragStart
+		local newPos = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+
+		-- Animate the frame's position with smooth transition
+		local tweenInfo = TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+		local tween = TweenService:Create(frame, tweenInfo, {Position = newPos})
+		tween:Play()
+	end
+end)
+
+-- Create the Play Button
+local playButton = Instance.new("TextButton")
+playButton.Size = UDim2.new(0, 100, 0, 40)
+playButton.Position = UDim2.new(0.35, 0, 0, 50)
+playButton.Text = "Play"
+playButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+playButton.BackgroundColor3 = Color3.fromRGB(65, 65, 65)  -- Green background
+playButton.Parent = frame
+
+local playCorner = Instance.new("UICorner")
+playCorner.Parent = playButton
+
+-- Create the Pause Button
+local pauseButton = Instance.new("TextButton")
+pauseButton.Size = UDim2.new(0, 100, 0, 40)
+pauseButton.Position = UDim2.new(0.35, 0, 0, 100)
+pauseButton.Text = "Pause"
+pauseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+pauseButton.BackgroundColor3 = Color3.fromRGB(65, 65, 65)  -- Yellow background
+pauseButton.Parent = frame
+
+local pauseCorner = Instance.new("UICorner")
+pauseCorner.Parent = pauseButton
+
+-- Create the Skip Button
+local skipButton = Instance.new("TextButton")
+skipButton.Size = UDim2.new(0, 100, 0, 40)
+skipButton.Position = UDim2.new(0.35, 0, 0, 150)
+skipButton.Text = "Skip"
+skipButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+skipButton.BackgroundColor3 = Color3.fromRGB(65, 65, 65)  -- Red background
+skipButton.Parent = frame
+
+local skipCorner = Instance.new("UICorner")
+skipCorner.Parent = skipButton
+
+-- Create the Volume TextBox
+local volumeTextBox = Instance.new("TextBox")
+volumeTextBox.Size = UDim2.new(0, 200, 0, 30)
+volumeTextBox.Position = UDim2.new(0.5, -100, 0, 200)
+volumeTextBox.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+volumeTextBox.TextColor3 = Color3.fromRGB(0, 0, 0)
+volumeTextBox.Text = "50"  -- Default volume is 50%
+volumeTextBox.Parent = frame
+
+local volumeCorner = Instance.new("UICorner")
+volumeCorner.Parent = volumeTextBox
+
+-- Sound Player
+local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://" .. tostring(sounds[1])
+sound.Parent = game.Workspace
+
+-- Play button logic
+playButton.MouseButton1Click:Connect(function()
+	sound:Play()
+end)
+
+-- Pause button logic
+pauseButton.MouseButton1Click:Connect(function()
+	sound:Pause()
+end)
+
+-- Skip button logic
+skipButton.MouseButton1Click:Connect(function()
+	-- Skip to the next sound in the list
+	local nextSoundIndex = math.random(1, #sounds)
+	sound.SoundId = "rbxassetid://" .. tostring(sounds[nextSoundIndex])
+	sound:Play()
+end)
+
+-- Volume TextBox logic
+volumeTextBox.FocusLost:Connect(function()
+	-- Update the volume when the user finishes typing
+	local value = tonumber(volumeTextBox.Text)
+	if value then
+		-- Clamp the value to make sure it's between 0 and 1
+		sound.Volume = math.clamp(value / 100, 0, 1)
+	else
+		-- If the user typed invalid input, reset to 50%
+		volumeTextBox.Text = "50"
+		sound.Volume = 0.5
+	end
+end)
+
+-- Update the TextBox when the volume changes (if you want real-time update)
+sound:GetPropertyChangedSignal("Volume"):Connect(function()
+	volumeTextBox.Text = tostring(math.round(sound.Volume * 100))  -- Show volume as percentage
+end)
