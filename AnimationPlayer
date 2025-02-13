@@ -1,0 +1,176 @@
+local plr = game.Players.LocalPlayer
+local plrGui = plr:WaitForChild("PlayerGui")
+
+-- Create the main GUI
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = plrGui
+
+-- Create a Frame for the GUI layout
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 400, 0, 300)  -- Initial size of 400x300px
+frame.Position = UDim2.new(0.5, -200, 0.5, -150)  -- Centered on screen
+frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)  -- Dark gray background
+frame.Parent = screenGui
+
+-- Create the TextBox for entering the animation ID
+local textBox = Instance.new("TextBox")
+textBox.Size = UDim2.new(0, 300, 0, 50)
+textBox.Position = UDim2.new(0.5, -150, 0.5, -100)  -- Centered inside the frame
+textBox.Text = ""  -- Initial text (empty)
+textBox.PlaceholderText = "Enter Animation ID"  -- Placeholder text
+textBox.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text
+textBox.BackgroundColor3 = Color3.fromRGB(0, 170, 255)  -- Blue background
+textBox.Parent = frame
+
+-- Create a Button to play the animation
+local playButton = Instance.new("TextButton")
+playButton.Size = UDim2.new(0, 200, 0, 50)
+playButton.Position = UDim2.new(0.5, -100, 0.5, -25)  -- Centered below the TextBox
+playButton.Text = "Play Animation"
+playButton.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text
+playButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)  -- Green background
+playButton.Parent = frame
+
+-- Create a Button to stop the animation
+local stopButton = Instance.new("TextButton")
+stopButton.Size = UDim2.new(0, 200, 0, 50)
+stopButton.Position = UDim2.new(0.5, -100, 0.5, 50)  -- Centered below the Play button
+stopButton.Text = "Stop Animation"
+stopButton.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text
+stopButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)  -- Red background
+stopButton.Parent = frame
+
+-- Create a Toggle Button for Looping
+local loopButton = Instance.new("TextButton")
+loopButton.Size = UDim2.new(0, 200, 0, 50)
+loopButton.Position = UDim2.new(0.5, -100, 0.5, 125)  -- Centered below the Stop button
+loopButton.Text = "Loop Animation: OFF"
+loopButton.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text
+loopButton.BackgroundColor3 = Color3.fromRGB(255, 255, 0)  -- Yellow background
+loopButton.Parent = frame
+
+-- Add a resizable corner (bottom-right corner)
+local resizeCorner = Instance.new("Frame")
+resizeCorner.Size = UDim2.new(0, 20, 0, 20)  -- 20x20px corner
+resizeCorner.Position = UDim2.new(1, -20, 1, -20)  -- Positioned at the bottom-right corner of the frame
+resizeCorner.BackgroundColor3 = Color3.fromRGB(200, 200, 200)  -- Light gray color for the corner
+resizeCorner.Parent = frame
+
+-- Variable to store the current animation track
+local currentAnimationTrack = nil
+local loopAnimation = false  -- Track if the animation should loop
+
+-- Function to play the animation entered in the TextBox
+local function playAnimation()
+    local animationId = textBox.Text  -- Get the animation ID from the TextBox
+
+    -- Validate the animation ID (ensure it’s not empty and is a valid ID)
+    if animationId ~= "" then
+        local character = plr.Character or plr.CharacterAdded:Wait()  -- Wait for the character to load
+        local humanoid = character:WaitForChild("Humanoid")  -- Get the Humanoid
+
+        -- Create the animation and load it onto the humanoid
+        local animation = Instance.new("Animation")
+        animation.AnimationId = "rbxassetid://" .. animationId  -- Add "rbxassetid://" to the ID
+
+        -- Stop any existing animation before playing the new one
+        if currentAnimationTrack then
+            currentAnimationTrack:Stop()
+        end
+
+        currentAnimationTrack = humanoid:LoadAnimation(animation)
+
+        -- Play the animation
+        currentAnimationTrack:Play()
+
+        -- Loop the animation if loop is enabled
+        if loopAnimation then
+            currentAnimationTrack.Looped = true
+        else
+            currentAnimationTrack.Looped = false
+        end
+    else
+        print("Please enter a valid Animation ID.")
+    end
+end
+
+-- Function to stop the animation
+local function stopAnimation()
+    if currentAnimationTrack then
+        currentAnimationTrack:Stop()  -- Stop the currently playing animation
+        currentAnimationTrack = nil  -- Reset the current animation track
+    else
+        print("No animation is currently playing.")
+    end
+end
+
+-- Function to toggle the loop state
+local function toggleLoop()
+    loopAnimation = not loopAnimation  -- Toggle the loop state
+
+    -- Update the button text based on the loop state
+    if loopAnimation then
+        loopButton.Text = "Loop Animation: ON"
+    else
+        loopButton.Text = "Loop Animation: OFF"
+    end
+end
+
+-- Function to make the frame draggable
+local dragging = false
+local dragStart = nil
+local startPos = nil
+
+frame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = frame.Position
+    end
+end)
+
+frame.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
+end)
+
+frame.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragStart
+        frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+-- Function to make the frame resizable
+local resizing = false
+local resizeStart = nil
+local resizeStartSize = nil
+
+resizeCorner.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        resizing = true
+        resizeStart = input.Position
+        resizeStartSize = frame.Size
+    end
+end)
+
+resizeCorner.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        resizing = false
+    end
+end)
+
+resizeCorner.InputChanged:Connect(function(input)
+    if resizing and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - resizeStart
+        local newWidth = math.max(resizeStartSize.X.Offset + delta.X, 200)  -- Minimum width of 200px
+        local newHeight = math.max(resizeStartSize.Y.Offset + delta.Y, 150)  -- Minimum height of 150px
+        frame.Size = UDim2.new(0, newWidth, 0, newHeight)
+    end
+end)
+
+-- Connect the buttons to their respective functions
+playButton.MouseButton1Click:Connect(playAnimation)
+stopButton.MouseButton1Click:Connect(stopAnimation)
+loopButton.MouseButton1Click:Connect(toggleLoop)
