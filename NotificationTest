@@ -1,0 +1,4 @@
+local time = 10
+loadstring(game:HttpGet('https://raw.githubusercontent.com/Hacking-Gui/All/refs/heads/main/NotificationP1'))()
+HeadingNotifiTxt.Text = "Client"
+loadstring(game:HttpGet('https://raw.githubusercontent.com/Hacking-Gui/All/refs/heads/main/NotificationP1'))()
