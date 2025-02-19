@@ -6,7 +6,7 @@ screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 local sounds = {
 	{SoundId = "rbxassetid://17662155623", Name = "Erm"},
 	{SoundId = "rbxassetid://111851390281777", Name = "Phonk"},
-	{SoundId = "rbxassetid://71547246839600", Name = "Sigma Boy"},
+	{SoundId = "rbxassetid://71547246839600", Name = "Sigma Boy (removed :()"},
 	{SoundId = "rbxassetid://6252283564", Name = "Discord Call"},
 	{SoundId = "rbxassetid://7288899492", Name = "💀"},
 	{SoundId = "rbxassetid://431839999", Name = "Mail"},
