@@ -1,0 +1,24 @@
+local TweenService = game:GetService("TweenService")
+
+local NotifiPos1 = UDim2.new(1, 0, 0.87, 0)
+local NotifiPos2 = UDim2.new(0.85, 0, 0.87, 0)
+
+local PlayerForNotifi = game.Players.LocalPlayer
+local PlayerGuiForNotifi = PlayerForNotifi.PlayerGui
+local NotificationBubbleGui = Instance.new("ScreenGui", PlayerGuiForNotifi)
+NotificationBubbleGui.Name = "Notification"
+local NotificationBubbleFrame = Instance.new("Frame", NotificationBubbleGui)
+local NotifiFrameSCorner = Instance.new("UICorner", NotificationBubbleFrame)
+NotifiFrameSCorner.CornerRadius = UDim.new(0.2, 6)
+NotificationBubbleFrame.Position = NotifiPos1
+NotificationBubbleFrame.Size = UDim2.new(0.13, 0, 0.1, 0)
+NotificationBubbleFrame.BackgroundColor3 = Color3.fromRGB(48, 48, 48)
+NotificationBubbleFrame.Name = "NotificationFrame"
+
+local HeadingNotifiTxt = Instance.new("TextLabel", NotificationBubbleFrame)
+HeadingNotifiTxt.Position = UDim2.new(0, 0, 0, 0)
+HeadingNotifiTxt.Size = UDim2.new(1, 0, 0.3, 0)
+HeadingNotifiTxt.BackgroundColor3 = Color3.fromRGB(48, 48, 48)
+HeadingNotifiTxt.BackgroundTransparency = 1
+HeadingNotifiTxt.TextScaled = true
+HeadingNotifiTxt.TextColor3 = Color3.fromRGB(207, 207, 207)
