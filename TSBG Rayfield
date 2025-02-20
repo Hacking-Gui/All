@@ -1,0 +1,200 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+	Name = "The Strongest Battlegrounds",
+	LoadingTitle = "The Strongest Battlegrounds",
+	LoadingSubtitle = "Welcome!",
+	ConfigurationSaving = {
+		Enabled = true,
+		FolderName = nil, -- Create a custom folder for your hub/game
+		FileName = "Example Hub"
+	},
+	Discord = {
+		Enabled = true,
+		Invite = "https://discord.gg/EDMmnsdz", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ABCD would be ABCD
+		RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+	},
+	KeySystem = true, -- Set this to true to use our key system
+	KeySettings = {
+		Title = "Key | The Strongest Battlegrounds",
+		Subtitle = "Requires Key",
+		Note = "Key In Discord Server",
+		FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+		SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+		GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+		Key = {"Hacking"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+	}
+})
+
+local MainTab = Window:CreateTab("Main", nil) -- Title, Image
+local MainSection = MainTab:CreateSection("Main")
+
+Rayfield:Notify({
+	Title = "Client",
+	Content = "Injected",
+	Duration = 5,
+	Image = 13047715178,
+	Actions = { -- Notification Buttons
+		Ignore = {
+			Name = "Close",
+			Callback = function()
+				print("The user tapped Close")
+			end
+		},
+	},
+})
+
+local OtherSection = MainTab:CreateSection("Other")
+
+local Toggle = MainTab:CreateToggle({
+	Name = "PLACEHOLDER",
+	CurrentValue = false,
+	Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+	Callback = function(Value)
+		print("PLACEHOLDER")
+	end,
+})
+
+local PlayerTab = Window:CreateTab("Player", nil) -- Title, Image
+local MainSection = PlayerTab:CreateSection("Movement",false) -- The 2nd argument is to tell if its only a Title and doesnt contain elements
+
+local WalkSpeedSection = PlayerTab:CreateSection("WalkSpeed")
+
+local Slider = PlayerTab:CreateSlider({
+	Name = "WalkSpeed Slider",
+	Range = {1, 10000},
+	Increment = 1,
+	Suffix = "Speed",
+	CurrentValue = 16,
+	Flag = "sliderws", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+	Callback = function(Value)
+		game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = (Value)
+	end,
+})
+
+local Input = PlayerTab:CreateInput({
+	Name = "Walkspeed",
+	PlaceholderText = "1-500",
+	RemoveTextAfterFocusLost = false,
+	Callback = function(Text)
+		game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = (Text)
+	end,
+})
+
+local Slider = PlayerTab:CreateSlider({
+	Name = "JumpPower Slider",
+	Range = {1, 10000},
+	Increment = 1,
+	Suffix = "Speed",
+	CurrentValue = 16,
+	Flag = "sliderjp", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+	Callback = function(Value)
+		game.Players.LocalPlayer.Character.Humanoid.JumpPower = (Value)
+	end,
+})
+
+local Toggle = PlayerTab:CreateToggle({
+	Name = "Infinite Jump Toggle",
+	Callback = function()
+		--Toggles the infinite jump between on or off on every script run
+		_G.infinjump = not _G.infinjump
+
+		if _G.infinJumpStarted == nil then
+			--Ensures this only runs once to save resources
+			_G.infinJumpStarted = true
+
+			--Notifies readiness
+			Rayfield:Notify({
+				Title = "Client",
+				Content = "Infinite Jump Activated",
+				Duration = 5,
+				Image = 13047715178,
+				Actions = { -- Notification Buttons
+					Ignore = {
+						Name = "Close",
+						Callback = function()
+							print("The user tapped Close")
+						end
+					},
+				},
+			})
+
+			--The actual infinite jump
+			local plr = game:GetService('Players').LocalPlayer
+			local m = plr:GetMouse()
+			m.KeyDown:connect(function(k)
+				if _G.infinjump then
+					if k:byte() == 32 then
+						humanoid = game:GetService'Players'.LocalPlayer.Character:FindFirstChildOfClass('Humanoid')
+						humanoid:ChangeState('Jumping')
+						wait()
+						humanoid:ChangeState('Seated')
+					end
+				end
+			end)
+		end
+	end,
+})
+
+local FightingTab = Window:CreateTab("Fighting", nil) -- Title, Image
+local MainSection = FightingTab:CreateSection("Main",false) -- The 2nd argument is to tell if its only a Title and doesnt contain elements
+
+local Dropdown = FightingTab:CreateDropdown({
+	Name = "Helpful",
+	Options = {"No Dash Cooldown","No Stun"},
+	CurrentOption = {"None"},
+	MultipleOptions = true,
+	Flag = "dropdownarea", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+	Callback = function(Option)
+		print(Option)
+	end,
+})
+
+local Button1 = FightingTab:CreateButton({
+	Name = "AutoKill",
+	Callback = function()
+		-- I DONT KNOW HOW OH NO
+	end,
+})
+
+local TPTab = Window:CreateTab("Teleports", nil) -- Title, Image
+local LocationsSection = TPTab:CreateSection("Locations",false) -- The 2nd argument is to tell if its only a Title and doesnt contain elements
+
+local Button1 = TPTab:CreateButton({
+	Name = "Middle Of Map",
+	Callback = function()
+
+		local TeleportLocation = Vector3.new(149.76547241210938, 440.7559814453125, 29.5396118164025)
+		local plr = game.Players.LocalPlayer
+		local char = plr.Character
+		if char and char:FindFirstChild("HumanoidRootPart") then
+			char.HumanoidRootPart.CFrame = CFrame.new(TeleportLocation)
+		end
+	end,
+})
+
+local Button2 = TPTab:CreateButton({
+	Name = "Mountain1",
+	Callback = function()
+
+		local TeleportLocation = Vector3.new(310.9303283691406, 671.10400390625, 414.71331787109375)
+		local plr = game.Players.LocalPlayer
+		local char = plr.Character
+		if char and char:FindFirstChild("HumanoidRootPart") then
+			char.HumanoidRootPart.CFrame = CFrame.new(TeleportLocation)
+		end
+	end,
+})
+
+local Button3 = TPTab:CreateButton({
+	Name = "Mountain2",
+	Callback = function()
+
+		local TeleportLocation = Vector3.new(-1.0333057641983032, 652.521240234375, -365.32928466796875)
+		local plr = game.Players.LocalPlayer
+		local char = plr.Character
+		if char and char:FindFirstChild("HumanoidRootPart") then
+			char.HumanoidRootPart.CFrame = CFrame.new(TeleportLocation)
+		end
+	end,
+})
