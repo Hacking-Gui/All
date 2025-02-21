@@ -46,7 +46,7 @@ loopButton.Size = UDim2.new(0, 200, 0, 50)
 loopButton.Position = UDim2.new(0.5, -100, 0.5, 125)  -- Centered below the Stop button
 loopButton.Text = "Loop Animation: OFF"
 loopButton.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text
-loopButton.BackgroundColor3 = Color3.fromRGB(255, 255, 0)  -- Yellow background
+loopButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Yellow background
 loopButton.Parent = frame
 
 -- Add a resizable corner (bottom-right corner)
