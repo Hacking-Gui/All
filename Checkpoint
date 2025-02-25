@@ -1,0 +1,71 @@
+local plr = game.Players.LocalPlayer
+local char = plr.Character or plr.CharacterAdded:Wait()
+local humanoid = char:WaitForChild("Humanoid")
+local plrPos = char.HumanoidRootPart.Position
+local plrGui = plr.PlayerGui
+
+local CheckP = Instance.new("Part")
+CheckP.Parent = game.Workspace
+CheckP.Anchored = true
+CheckP.Shape = Enum.PartType.Ball
+CheckP.Size = Vector3.new(2, 2, 2)
+CheckP.Transparency = 0.5
+CheckP.BrickColor = BrickColor.new("Baby blue")
+CheckP.CanCollide = false
+CheckP.Position = plrPos
+CheckP.Material = Enum.Material.Air
+CheckP.Name = "CheckPoint"
+
+local Gui = Instance.new("ScreenGui")
+Gui.Parent = plrGui
+Gui.Name = "CheckpointGui"
+
+local Frame = Instance.new("Frame")
+Frame.Parent = Gui
+Frame.Position = UDim2.new(0.05, 0, 0.5, 0)
+Frame.Size = UDim2.new(0.2, 0, 0.1, 0)
+Frame.AnchorPoint = Vector2.new(0.5, 0.5)
+Frame.Name = "CheckpointFrame"
+
+local GTC = Instance.new("TextButton")
+GTC.Parent = Frame
+GTC.Text = "Tp to checkpoint"
+GTC.TextScaled = true
+GTC.Size = UDim2.new(1, 0, 0.3, 0)
+GTC.Position = UDim2.new(0, 0, 0.3, 0)
+GTC.Name = "Teleport"
+
+local UICorner1 = Instance.new("UICorner", GTC)
+
+local UIDrag = Instance.new("UIDragDetector", Frame)
+local UICorner = Instance.new("UICorner", Frame)
+
+local BC = Instance.new("TextButton")
+BC.Parent = Frame
+BC.Text = "Bring Checkpoint"
+BC.TextScaled = true
+BC.Size = UDim2.new(1, 0, 0.3, 0)
+BC.Name = "Bring"
+
+local UICorner = Instance.new("UICorner", BC)
+
+GTC.MouseButton1Click:Connect(function()
+	local CheckPLoc = CheckP.Position
+	local TeleportLocation = Vector3.new(CheckPLoc.X, CheckPLoc.Y, CheckPLoc.Z)
+
+	if char and char:FindFirstChild("HumanoidRootPart") then
+		GTC.Text = "Teleporting..."
+		char.HumanoidRootPart.CFrame = CFrame.new(TeleportLocation)
+		wait(0.5)
+		GTC.Text = "Tp to checkpoint"
+	else
+		GTC.Text = "Error: Unable to teleport"
+		wait(1)
+		GTC.Text = "Tp to checkpoint"
+	end
+end)
+
+BC.MouseButton1Click:Connect(function()
+	plrPos = char.HumanoidRootPart.Position
+	CheckP.Position = plrPos
+end)
