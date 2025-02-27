@@ -19,6 +19,7 @@ CheckP.Name = "CheckPoint"
 local Gui = Instance.new("ScreenGui")
 Gui.Parent = plrGui
 Gui.Name = "CheckpointGui"
+Gui.ResetOnSpawn = false
 
 local Frame = Instance.new("Frame")
 Frame.Parent = Gui
@@ -50,6 +51,8 @@ BC.Name = "Bring"
 local UICorner = Instance.new("UICorner", BC)
 
 GTC.MouseButton1Click:Connect(function()
+	 char = plr.Character or plr.CharacterAdded:Wait()
+	 humanoid = char:WaitForChild("Humanoid")
 	local CheckPLoc = CheckP.Position
 	local TeleportLocation = Vector3.new(CheckPLoc.X, CheckPLoc.Y, CheckPLoc.Z)
 
