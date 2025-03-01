@@ -1,0 +1,42 @@
+-- Player
+local plr = game.Players.LocalPlayer
+local plrGui = plr.PlayerGui
+local Char = plr.Character
+local Humanoid = Char.Humanoid
+
+-- Gui Setup
+local CompGui = Instance.new('ScreenGui', plrGui)
+local TaskbarFrame = Instance.new('Frame', CompGui)
+local TaskbarFrameCorner = Instance.new('UICorner', TaskbarFrame)
+
+local Settings = Instance.new("TextButton", TaskbarFrame)
+local SettingsCorner = Instance.new('UICorner', Settings)
+local SettingsF = Instance.new('Frame', TaskbarFrame)
+local SettingsFCorner = Instance.new('UICorner', SettingsF)
+
+local Time = Instance.new('TextButton', TaskbarFrame)
+local TimeCorner = Instance.new('UICorner', Time)
+
+local Weather = Instance.new('TextButton', TaskbarFrame)
+local WeatherCorner = Instance.new('UICorner', Weather)
+
+-- Misc
+SettingsF.Visible = true
+
+-- Colors
+TaskbarFrame.BackgroundColor3 = Color3.fromRGB(33, 33, 33)
+
+SettingsF.BackgroundColor3 = Color3.fromRGB(33, 33, 33)
+
+-- Positions and Sizes
+TaskbarFrame.Position = UDim2.new(0, 0, 0.946, 0)
+TaskbarFrame.Size = UDim2.new(1, 0, 0.054, 0)
+
+SettingsF.Position = UDim2.new(0.558, 0, -11.258, 0)
+SettingsF.Size = UDim2.new(0.145, 0,11.13, 0)
+
+Settings.Position = UDim2.new(0.558, 0, 0, 0)
+Settings.Size = UDim2.new(0.033, 0, 0.995, 0)
+
+--Time.Position
+Time.Size = UDim2.fromScale(1, 1)
