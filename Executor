@@ -1,0 +1,92 @@
+-- Player
+local plr123 = game.Players.LocalPlayer
+local plrGui123 = plr123.PlayerGui
+local Char123 = plr123.Character
+local Humanoid123 = Char123.Humanoid
+
+-- Gui Setup
+local ExeGui = Instance.new('ScreenGui', plrGui123)
+local ExeFrame = Instance.new('Frame', ExeGui)
+local ExeT = Instance.new("TextBox", ExeFrame)
+local Execute = Instance.new('TextButton', ExeFrame)
+local Copy = Instance.new('TextButton', ExeFrame)
+local Clear = Instance.new('TextButton', ExeFrame)
+local ExeFrameDrag = Instance.new('UIDragDetector', ExeFrame)
+local ExeFrameCorner = Instance.new('UICorner', ExeFrame)
+local ExeTCorner = Instance.new('UICorner', ExeT)
+local ExecuteCorner = Instance.new('UICorner', Execute)
+local CopyCorner = Instance.new('UICorner', Copy)
+local ClearCorner = Instance.new('UICorner', Clear)
+
+-- Names
+ExeGui.Name = "Executor"
+ExeT.Name = "TextBox"
+Execute.Name = "Execute"
+Copy.Name = "Copy"
+Clear.Name = "Clear"
+
+-- Positions & Sizes
+ExeFrame.Position = UDim2.new(0.327, -54, 0.306, -61)
+ExeFrame.Size = UDim2.new(0.344, 0, 0.363, 0)
+
+ExeT.Position = UDim2.new(0.023, 0, 0.05, 0)
+ExeT.Size = UDim2.new(0.95, 0, 0.48, 0)
+
+Execute.Position = UDim2.new(0.023, 0, 0.736, 0)
+Execute.Size = UDim2.new(0.369, 0, 0.205, 0)
+
+Copy.Position = UDim2.new(0.223, 0, 0.56, 0)
+Copy.Size = UDim2.new(0.169, 0, 0.148, 0)
+
+Clear.Position= UDim2.new(0.023, 0, 0.56, 0)
+Clear.Size = UDim2.new(0.169, 0, 0.148, 0)
+
+-- Text Settings
+ExeT.Text = [[
+print("Hello world!")
+]]
+Execute.Text = "Execute"
+Copy.Text = "Copy"
+Clear.Text = "Clear"
+
+Execute.TextScaled = true
+Copy.TextScaled = true
+Clear.TextScaled = true
+ExeT.TextScaled = false
+
+ExeFrame.BackgroundColor3 = Color3.fromRGB(67, 67, 67)
+ExeT.BackgroundColor3 = Color3.fromRGB(54, 54, 54)
+Execute.BackgroundColor3 = Color3.fromRGB(54, 54, 54)
+Copy.BackgroundColor3 = Color3.fromRGB(54, 54, 54)
+Clear.BackgroundColor3 = Color3.fromRGB(54, 54, 54)
+
+Execute.TextColor3 = Color3.fromRGB(0, 0, 0)
+Copy.TextColor3 = Color3.fromRGB(0, 0, 0)
+Clear.TextColor3 = Color3.fromRGB(0, 0, 0)
+ExeT.TextColor3 = Color3.fromRGB(200,200,200)
+
+ExeT.TextSize = 20
+
+ExeT.Font = Enum.Font.Code
+
+ExeT.TextYAlignment = Enum.TextYAlignment.Top
+ExeT.TextXAlignment = Enum.TextXAlignment.Left
+
+ExeT.ClearTextOnFocus = false
+
+ExeT.MultiLine = true
+
+-- Events
+Execute.MouseButton1Click:Connect(function()
+	Execute.MouseButton1Click:Connect(function()
+		loadstring(ExeT.Text)()
+	end)
+end)
+
+Copy.MouseButton1Click:Connect(function()
+	setclipboard(ExeT.Text)
+end)
+
+Clear.MouseButton1Click:Connect(function()
+	ExeT.Text = ""
+end)
