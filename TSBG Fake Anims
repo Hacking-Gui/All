@@ -1,0 +1,133 @@
+-- Create a ScreenGui with a toggle button
+local player = game.Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = playerGui
+
+-- Create the main frame for the GUI (with smooth corners)
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 400, 0, 150)
+mainFrame.Position = UDim2.new(0.5, -200, 0.5, -75)
+mainFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)  -- Dark background color
+mainFrame.BackgroundTransparency = 0.2
+mainFrame.Parent = screenGui
+
+-- Make the frame have smooth corners
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 15)  -- Smooth corners
+corner.Parent = mainFrame
+
+-- Make the frame draggable
+local dragging = false
+local dragStart
+local startPos
+
+mainFrame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = mainFrame.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+mainFrame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement and dragging then
+        local delta = input.Position - dragStart
+        mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+-- Create a close button
+local closeButton = Instance.new("TextButton")
+closeButton.Size = UDim2.new(0, 50, 0, 50)
+closeButton.Position = UDim2.new(1, -60, 0, 10)
+closeButton.Text = "X"
+closeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)  -- Red background for close button
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text
+closeButton.Parent = mainFrame
+local corneruiclose = Instance.new("UICorner", closeButton)
+
+closeButton.MouseButton1Click:Connect(function()
+    screenGui:Destroy()  -- Close the GUI when clicked
+end)
+
+-- Create a toggle button
+local button = Instance.new("TextButton")
+button.Size = UDim2.new(0, 200, 0, 50)
+button.Position = UDim2.new(0.5, -100, 0.6, 0)  -- Adjusted to fit inside the frame with a small gap
+button.Text = "Show/Hide Move Button"
+button.Parent = mainFrame
+button.BackgroundColor3 = Color3.fromRGB(0, 150, 255)  -- Blue background
+button.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text
+
+-- Make the toggle button have smooth corners
+local buttonCorner = Instance.new("UICorner")
+buttonCorner.CornerRadius = UDim.new(0, 12)
+buttonCorner.Parent = button
+
+-- Create the move button
+local moveButton = Instance.new("TextButton")
+moveButton.Size = UDim2.new(0, 200, 0, 50)
+moveButton.Position = UDim2.new(0.5, -100, 0.2, 0)  -- Adjusted position to ensure it's below the toggle button with space
+moveButton.Text = "Move Forward"
+moveButton.Parent = mainFrame
+moveButton.Visible = false
+moveButton.BackgroundColor3 = Color3.fromRGB(0, 200, 0)  -- Green background
+moveButton.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text
+
+-- Make the move button have smooth corners
+local moveButtonCorner = Instance.new("UICorner")
+moveButtonCorner.CornerRadius = UDim.new(0, 12)
+moveButtonCorner.Parent = moveButton
+
+-- Toggle function
+local function toggleMoveButton()
+    moveButton.Visible = not moveButton.Visible
+end
+
+button.MouseButton1Click:Connect(toggleMoveButton)
+
+-- Smooth movement function with animation
+local function moveCharacter()
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+
+    -- Load animation
+    local animator = humanoid:FindFirstChildOfClass("Animator")
+    if not animator then
+        animator = Instance.new("Animator")
+        animator.Parent = humanoid
+    end
+
+    local animation = Instance.new("Animation")
+    animation.AnimationId = "rbxassetid://14900168720"  -- Use the provided animation ID
+    local animationTrack = animator:LoadAnimation(animation)
+    animationTrack:Play()
+
+    local moveDistance = 60  -- Distance to move in studs
+    local moveTime = 2.3  -- Time in seconds to complete movement
+    local steps = 120  -- Number of steps for smooth movement
+    local waitTime = moveTime / steps  -- Time between each step
+    local stepSize = moveDistance / steps  -- Studs to move per step
+
+    for i = 1, steps do
+        -- Get the current LookVector (direction the player is facing)
+        local direction = humanoidRootPart.CFrame.LookVector
+
+        -- Move forward by adjusting CFrame
+        humanoidRootPart.CFrame = humanoidRootPart.CFrame + direction * stepSize
+        task.wait(waitTime)
+    end
+
+    animationTrack:Stop()
+end
+
+-- Connect move button click to movement function
+moveButton.MouseButton1Click:Connect(moveCharacter)
