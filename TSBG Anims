@@ -1,0 +1,697 @@
+clientText = [[Ｆｕｒｎ Ｃｌｉｅｎｔ]]
+logo = clientText .. [[ uses Rayfield / Loading...
+
+	 ________ ___  ___  ________  ________      
+	|\  _____\\  \|\  \|\   __  \|\   ___  \    
+	\ \  \__/\ \  \\\  \ \  \|\  \ \  \\ \  \   
+	 \ \   __\\ \  \\\  \ \   _  _\ \  \\ \  \  
+	  \ \  \_| \ \  \\\  \ \  \\  \\ \  \\ \  \ 
+	   \ \__\   \ \_______\ \__\\ _\\ \__\\ \__\
+	    \|__|    \|_______|\|__|\|__|\|__| \|__|
+
+
+]]
+
+print(logo)
+
+local Rayfield = nil
+pcall(function()
+	Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+end)
+if Rayfield then
+	print("Rayfield has been injected.")
+else
+	print("Rayfield has failed to inject.")
+	return
+end
+
+local Window = Rayfield:CreateWindow({
+	Name = "FURN SBGHub",
+	Icon = "leaf", -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
+	LoadingTitle = "Loading...",
+	LoadingSubtitle = "Please wait.",
+	Theme = "Darker", -- Check https://docs.sirius.menu/rayfield/configuration/themes
+
+	DisableRayfieldPrompts = false,
+	DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
+
+	ConfigurationSaving = {
+		Enabled = false,
+		FolderName = nil, -- Create a custom folder for your hub/game
+		FileName = "Big Hub"
+	},
+
+	Discord = {
+		Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
+		Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
+		RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+	},
+
+	KeySystem = false, -- Set this to true to use our key system
+	KeySettings = {
+		Title = "Untitled",
+		Subtitle = "Key System",
+		Note = "No method of obtaining the key is provided", -- Use this to tell the user how to get a key
+		FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+		SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+		GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+		Key = {"Hello"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+	}
+})
+
+local MainTab = Window:CreateTab("Main Tools", "user-round") -- Title, Image
+
+player = game.Players.LocalPlayer
+
+local RS = game.ReplicatedStorage
+local uis = game.UserInputService
+local mouse = player:GetMouse()
+local Camera = game.Workspace.CurrentCamera
+
+for i, thing in RS:GetDescendants() do
+	if thing:IsA("ColorGradingEffect") then thing:Destroy() end
+end
+
+local DefaultGravity = game.Workspace.Gravity
+
+local SliderGravity = MainTab:CreateSlider({
+	Name = "Gravity",
+	Range = {0, 500},
+	Increment = 5,
+	Suffix = "",
+	CurrentValue = DefaultGravity,
+	Flag = "Slider1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+	Callback = function(Value)
+		-- The function that takes place when the slider changes
+		-- The variable (Value) is a number which correlates to the value the slider is currently at
+		game.Workspace.Gravity = Value
+	end,
+})
+
+local ButtonFlingSelf = MainTab:CreateButton({
+	Name = "Fling Self",
+	Callback = function()
+		-- The function that takes place when the button is pressed
+		if not hum then return end
+		if not hrp then return end
+		local n1 = math.random(-2000, 3000)
+		hum.Sit = true
+		task.wait(0.03)
+		hrp.Velocity = Vector3.new(n1,n1,n1)
+	end,
+})
+
+local FlingOnTouch = false
+local function loadFlingOnTouch()
+	if not hrp then return end
+	hrp.Touched:Connect(function(hit)
+		if not FlingOnTouch then return end
+		if not hit or not hit.Parent then return end
+		local victimhum = hit.Parent:FindFirstChild("Humanoid")
+		if not victimhum then return end
+		if not hrp then return end
+		local SavedAnchorState = hrp.Anchored
+		task.wait(0.03)
+		hrp.Anchored = true
+		task.wait(0.03)
+		hrp.Velocity = Vector3.new(math.random(-1000, 1000), math.random(-1000, 1000), math.random(-1000, 1000))
+		task.wait(0.03)
+		hrp.Anchored = SavedAnchorState
+	end)
+end
+player.CharacterAdded:Connect(function()
+	task.wait(1)
+	if not hrp then return end
+	loadFlingOnTouch()
+end)
+loadFlingOnTouch()
+local ToggleFlingOnTouch = MainTab:CreateToggle({
+	Name = "Fling Self On Touch",
+	CurrentValue = FlingOnTouch,
+	Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+	Callback = function(Value)
+		-- The function that takes place when the toggle is pressed
+		-- The variable (Value) is a boolean on whether the toggle is true or false
+		FlingOnTouch = Value
+	end,
+})
+
+local ButtonSuicide = MainTab:CreateButton({
+	Name = "Suicide",
+	Callback = function()
+		-- The function that takes place when the button is pressed
+		if not hum then return end
+		hum.Health = 0
+	end,
+})
+local SuicideSP = CFrame.new(0,0,0)
+local ButtonSuicideSP = MainTab:CreateButton({
+	Name = "Set Suicide SpawnPoint",
+	Callback = function()
+		-- The function that takes place when the button is pressed
+		if not hum then return end
+		if not hrp then return end
+		SuicideSP = hrp.CFrame
+	end,
+})
+
+local TheStrongestBattlegroundsTab = Window:CreateTab("The Strongest Battlegrounds", nil) -- Title, Image
+local SgbAnimPriorities = Enum.AnimationPriority.Action4
+local ReloadAnimsWait = 1
+
+local animations = {
+	{
+		Section = "KJ Animations",
+		Name = "Ultimate 1",
+		ID = 17140902079,
+	},
+	{
+		Name = "Ultimate 2",
+		ID = 18445236460,
+	},
+	{
+		Name = "Stoic Bomb",
+		ID = 17141153099,
+	},
+	{
+		Name = "20-20-20 Dropkick Use",
+		ID = 17354976067,
+	},
+	{
+		Name = "20-20-20 Dropkick Hit",
+		ID = 17420452843,
+	},
+	{
+		Name = "Collateral Ruin",
+		ID = 17325254223,
+	},
+	{
+		Name = "Ultimate Flex Works",
+		ID = 77727115892579,
+	},
+	{
+		Section = "Saitama Animations",
+		Name = "Ultimate",
+		ID = 12447707844,
+	},
+	{
+		Name = "Omni Directional Punch",
+		ID = 13927612951,
+	},
+	{
+		Name = "Serious Punch",
+		ID = 12983333733,
+	},
+	{
+		Name = "Table Flip",
+		ID = 11365563255,
+	},
+	{
+		Section = "Hero Hunter Animations",
+		Name = "Ultimate",
+		ID = 12342141464,
+	},
+	{
+		Name = "Water Stream Cutting Fist",
+		ID = 12460977270,
+	},
+	{
+		Name = "Final Hunt Use",
+		ID = 12463072679,
+	},
+	{
+		Name = "Final Hunt Hit",
+		ID = 12467789963,
+	},
+	{
+		Name = "Rock Splitting Fist",
+		ID = 14057231976,
+	},
+	{
+		Name = "Crushed Rock Use",
+		ID = 13630786846,
+	},
+	{
+		Name = "Crushed Rock Hit",
+		ID = 13813099821,
+	},
+	{
+		Section = "Destructive Cyborg Animations",
+		Name = "Ultimate",
+		ID = 12772543293,
+	},
+	{
+		Name = "Speed Blitz Dropkick",
+		ID = 12832505612,
+	},
+	{
+		Name = "Flamewave Canon",
+		ID = 13083332742,
+	},
+	{
+		Name = "Incinerate",
+		ID = 13146710762,
+	},
+	{
+		Section = "Deadly Ninja Animations",
+		Name = "Ultimate",
+		ID = 13499771836,
+	},
+	{
+		Name = "Twinblade Rush Use",
+		ID = 13632347366,
+	},
+	{
+		Name = "Twinblade Rush Hit",
+		ID = 13633468484,
+	},
+	{
+		Name = "Straight On",
+		ID = 13643152947,
+	},
+	{
+		Name = "Carnage",
+		ID = 13723174078,
+	},
+	{
+		Name = "Fourfold Flashstrike",
+		ID = 13881335713,
+	},
+	{
+		Section = "Brutal Demon Animations",
+		Name = "Ultimate",
+		ID = 14733282425,
+	},
+	{
+		Name = "Death Blow Use",
+		ID = 15128849047,
+	},
+	{
+		Name = "Death Blow Counter",
+		ID = 15123665491,
+	},
+	{
+		Name = "Savage Tornado",
+		ID = 14719290328,
+	},
+	{
+		Name = "Brutal Beatdown",
+		ID = 14701242661,
+	},
+	{
+		Name = "Strength Difference Use",
+		ID = 14900168720,
+	},
+	{
+		Name = "Strength Difference Hit",
+		ID = 14920779925,
+	},
+	{
+		Section = "Blade Master Animations",
+		Name = "Ultimate",
+		ID = 15391323441,
+	},
+	{
+		Name = "Sunset",
+		ID = 15520132233,
+	},
+	{
+		Name = "Solar Cleave",
+		ID = 15676072469,
+	},
+	{
+		Name = "Sun Rise Use",
+		ID = 16062410809,
+	},
+	{
+		Name = "Sun Rise Hit",
+		ID = 16062712948,
+	},
+	{
+		Name = "Atomic Slash Use",
+		ID = 16082123712,
+	},
+	{
+		Name = "Atomic Slash Hit",
+		ID = 16057411888,
+	},
+	{
+		Section = "Wild Psychic Animations",
+		Name = "Ultimate",
+		ID = 16734584478,
+	},
+	{
+		Name = "Cosmic Strike",
+		ID = 16737255386,
+	},
+	{
+		Name = "Psychic Ricochet",
+		ID = 17464644182,
+	},
+	{
+		Name = "Terrible Tornado",
+		ID = 17278415853,
+	},
+	{
+		Name = "Sky Snatcher Use",
+		ID = 17860467628,
+	},
+	{
+		Name = "Sky Snatcher Hit",
+		ID = 17889080495,
+	},
+	{
+		Section = "Martial Artist Animations",
+		Name = "Ultimate (goofy)",
+		ID = 18435535291,
+	},
+	{
+		Name = "Grand Fissure",
+		ID = 129651400898906,
+	},
+	{
+		Name = "Twin Fangs",
+		ID = 18896229321,
+	},
+	{
+		Name = "Earth Splitting Strike Use",
+		ID = 18897119503,
+	},
+	{
+		Name = "Earth Splitting Strike Hit",
+		ID = 18897118507,
+	},
+	{
+		Name = "Last Breath Use",
+		ID = 106755459092436,
+	},
+	{
+		Name = "Last Breath Hit",
+		ID = 75502010126640,
+	},
+	{
+		Section = "The Frozen Soul Animations",
+		Name = "Equip",
+		ID = 95000469063288,
+	},
+	{
+		Name = "Ultimate: Sub-Zero Slash Storm",
+		ID = 134494086123052,
+	},
+	{
+		Name = "Permafrost",
+		ID = 100558589307006,
+	},
+	{
+		Name = "Frost Forge",
+		ID = 137561511768861,
+	},
+	{
+		Name = "Freezing Path",
+		ID = 112620365240235,
+	},
+	{
+		Name = "Judgement Chain",
+		ID = 75547590335774,
+	},
+    {
+        Section = "Emotes",
+        Name = "Crush",
+        ID = 13716964686,
+    },
+    {
+        Name = "Duel Request",
+        ID = 17464923657,
+    },
+    {
+        Name = "Chrono",
+        ID = 13935172019,
+        Loop = true,
+    },
+    {
+        Name = "Knocked Out",
+        ID = 17097745294,
+    },
+    {
+        Name = "I WILL FEINT",
+        ID = 17861869602,
+    },
+    {
+        Name = "Crouch",
+        ID = 17097035602,
+        Loop = true,
+    },
+    {
+        Name = "Heh",
+        ID = 13773978314,
+    },
+    {
+        Name = "Cute Spin",
+        ID = 17861849696,
+        Loop = true,
+    },
+    {
+        Name = "Table Flip",
+        ID = 15438946008,
+    },
+    {
+        Name = "Throne",
+        ID = 18450697195,
+    },
+    {
+        Name = "Leapin'",
+        ID = 17863299880,
+        Loop = true,
+    },
+    {
+        Name = "Dap Me Up",
+        ID = 15007878015,
+    },
+    {
+        Name = "Ramen Sit",
+        ID = 15503201875,
+    },
+    {
+        Name = "Ramen Eat",
+        ID = 15503362953,
+        Loop = true,
+    },
+    {
+        Name = "Situp Sit",
+        ID = 15674077481,
+    },
+    {
+        Name = "Situp",
+        ID = 15674164857,
+        Loop = true,
+    },
+    {
+        Name = "Traditional Duel",
+        ID = 15502751480,
+    },
+    {
+        Name = "Nah, I'd win.",
+        ID = 16746843881,
+    },
+    {
+        Name = "Backwards",
+        ID = 17863082627,
+        Loop = true,
+    },
+    {
+        Name = "Nightchild",
+        ID = 73949048256257,
+        Loop = true,
+    },
+    {
+        Name = "Clap Clap",
+        ID = 16038562573,
+        Loop = true,
+    },
+    {
+        Name = "Hologram",
+        ID = 15090734317,
+        Loop = true,
+    },
+    {
+        Name = "Stepping Shuffle",
+        ID = 17861898789,
+        Loop = true,
+    },
+    {
+        Name = "Taco Time",
+        ID = 17107076756,
+        Loop = true,
+    },
+    {
+        Name = "Guilty",
+        ID = 15092657164,
+    },
+    {
+        Name = "Bang",
+        ID = 16746824621,
+    },
+    {
+        Name = "Plank",
+        ID = 17107197570,
+    },
+    {
+        Name = "Plank Hold",
+        ID = 17107199838,
+    },
+    {
+        Name = "",
+        ID = 0,
+    },
+    {
+        Name = "",
+        ID = 0,
+    },
+    {
+        Name = "",
+        ID = 0,
+    },
+    {
+        Name = "",
+        ID = 0,
+    },
+    {
+        Name = "",
+        ID = 0,
+    },
+    {
+        Name = "",
+        ID = 0,
+    },
+    {
+        Name = "",
+        ID = 0,
+    },
+    {
+        Name = "",
+        ID = 0,
+    },
+    {
+        Section = "Tatical Roll",
+        Name = "Tatical Roll Start",
+        ID = 95582164547526,
+    },
+    {
+        Name = "Tatical Roll",
+        ID = 129959128025296,
+        Loop = true,
+    },
+    {
+        Name = "Tatical Roll End",
+        ID = 97763083185838,
+    },
+    {
+        Section = "Limited",
+        Name = "Boundless Rage",
+        ID = 107649573628906,
+    },
+    {
+        Name = "Final Stand",
+        ID = 113876851900426,
+    },
+    {
+        Name = "Eternal Seal",
+        ID = 100255267749203,
+    },
+}
+
+local function createAnimationToggle(animation)
+	local anim = Instance.new("Animation")
+	anim.AnimationId = "rbxassetid://" .. animation.ID
+	local loadedAnim = hum:LoadAnimation(anim)
+	loadedAnim.Looped = false
+    if animation.Loop then
+        loadedAnim.Looped = true
+    end
+	loadedAnim.Priority = Enum.AnimationPriority.Action
+
+	local toggle = TheStrongestBattlegroundsTab:CreateToggle({
+		Name = animation.Name,
+		CurrentValue = false,
+		Flag = "AnimToggle",
+		Callback = function(Value)
+			if Value then
+				loadedAnim:Play()
+			else
+				loadedAnim:Stop()
+			end
+		end
+	})
+
+	loadedAnim.Ended:Connect(function()
+		toggle:Set(false)
+	end)
+
+	player.CharacterAdded:Connect(function()
+		task.wait(ReloadAnimsWait)
+		anim = Instance.new("Animation")
+		anim.AnimationId = "rbxassetid://" .. animation.ID
+		loadedAnim = hum:LoadAnimation(anim)
+		loadedAnim.Looped = false
+        if animation.Loop then
+            loadedAnim.Looped = true
+        end
+		loadedAnim.Priority = Enum.AnimationPriority.Action
+		loadedAnim.Ended:Connect(function()
+			toggle:Set(false)
+		end)
+	end)
+end
+
+local lastSection = nil
+for _, animation in ipairs(animations) do
+	if animation.Section and animation.Section ~= lastSection then
+		TheStrongestBattlegroundsTab:CreateSection(animation.Section)
+		lastSection = animation.Section
+	end
+	createAnimationToggle(animation)
+end
+
+local TPTab = Window:CreateTab("Teleports", nil) -- Title, Image
+local LocationsSection = TPTab:CreateSection("Locations",false) -- The 2nd argument is to tell if its only a Title and doesnt contain elements
+
+local Button1 = TPTab:CreateButton({
+	Name = "Middle Of Map",
+	Callback = function()
+
+		local TeleportLocation = Vector3.new(149.76547241210938, 440.7559814453125, 29.5396118164025)
+		local plr = game.Players.LocalPlayer
+		local char = plr.Character
+		if char and char:FindFirstChild("HumanoidRootPart") then
+			char.HumanoidRootPart.CFrame = CFrame.new(TeleportLocation)
+		end
+	end,
+})
+
+local Button2 = TPTab:CreateButton({
+	Name = "Mountain1",
+	Callback = function()
+
+		local TeleportLocation = Vector3.new(310.9303283691406, 671.10400390625, 414.71331787109375)
+		local plr = game.Players.LocalPlayer
+		local char = plr.Character
+		if char and char:FindFirstChild("HumanoidRootPart") then
+			char.HumanoidRootPart.CFrame = CFrame.new(TeleportLocation)
+		end
+	end,
+})
+
+local Button3 = TPTab:CreateButton({
+	Name = "Mountain2",
+	Callback = function()
+
+		local TeleportLocation = Vector3.new(-1.0333057641983032, 652.521240234375, -365.32928466796875)
+		local plr = game.Players.LocalPlayer
+		local char = plr.Character
+		if char and char:FindFirstChild("HumanoidRootPart") then
+			char.HumanoidRootPart.CFrame = CFrame.new(TeleportLocation)
+		end
+	end,
+})
+
+print(clientText .. " has fully loaded.")
