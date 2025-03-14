@@ -1,4 +1,4 @@
-local themetype = Dark
+local ThemeIdentifier = "AmberGlow"
 
 --[[
 Theme Name - ThemeIdentifier
@@ -14,4 +14,4 @@ Ocean - Ocean
 Serenity - Serenity
 ]]
 
-loadstring(game:HttpGet('https://github.com/Hacking-Gui/All/blob/main/Project%20test%201'))()
+loadstring(game:HttpGet('https://raw.githubusercontent.com/Hacking-Gui/All/refs/heads/main/Project%20test%201'))()
