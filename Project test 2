@@ -1,0 +1,17 @@
+local themetype = Dark
+
+--[[
+Theme Name - ThemeIdentifier
+
+Default - Default
+Amber Glow - AmberGlow
+Amethyst - Amethyst
+Bloom - Bloom
+Dark Blue - DarkBlue
+Green - Green
+Light - Light
+Ocean - Ocean
+Serenity - Serenity
+]]
+
+loadstring(game:HttpGet('https://github.com/Hacking-Gui/All/blob/main/Project%20test%201'))()
