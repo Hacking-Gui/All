@@ -1,0 +1,6 @@
+local plr = game.Players.LocalPlayer
+local char = plr.Character
+local humanoid = char.Humanoid
+local plrPos = char.HumanoidRootPart.Position
+print(plrPos)
+setclipboard(tostring(plrPos))
